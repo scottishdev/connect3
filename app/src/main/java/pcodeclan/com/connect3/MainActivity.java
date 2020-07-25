@@ -3,7 +3,6 @@ package pcodeclan.com.connect3;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import androidx.gridlayout.widget.GridLayout;
@@ -11,14 +10,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
 public class MainActivity extends AppCompatActivity {
     int[] gameState = {2, 2, 2, 2, 2, 2, 2, 2, 2}; // 9 spaces for gamestate
     int[][] winningPositions = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}, {0, 3, 6}, {1, 4, 7}, {2, 5, 8}, {0, 4, 8}, {2, 4, 6}};
     int activePlayer = 0;// 0: yellow, 1: red, 2: empty
     boolean gameActive = true;
     int gameTurns = 0;
+/*    int p1Score = 0; // yellow player
+    int p2Score = 0; // red player
+    TextView p1TextView = (TextView) findViewById(R.id.p1TextView);
+    TextView p2TextView = (TextView) findViewById(R.id.p2TextView);*/
 
     // Method for dropping counters in the square
     public void dropIn(View view) {
@@ -28,7 +29,6 @@ public class MainActivity extends AppCompatActivity {
         if (gameState[tappedCounter] == 2 && gameActive && gameTurns != 9) { //Checks if counter has been tapped. If no, then place counter and continue game. Also, only runs if gameis active
             gameState[tappedCounter] = activePlayer; //changes the value of the current element in gameState to the activePlayer
             counter.setTranslationY(-1500);
-            gameTurns ++;
 
             if (activePlayer == 0) {
                 counter.setImageResource(R.drawable.yellow);
@@ -40,6 +40,20 @@ public class MainActivity extends AppCompatActivity {
 
             counter.animate().translationYBy(1500).rotation(800).setDuration(300);
 
+            gameTurns ++;
+
+            if (gameTurns == 9){
+                // game ends on draw
+                gameActive = false;
+                Button playAgainButton = (Button) findViewById(R.id.playAgainButton);
+                TextView winnerTextView = (TextView) findViewById(R.id.winnerTextView);
+                winnerTextView.setText("It's a Draw!");
+
+                playAgainButton.setVisibility(View.VISIBLE);
+                winnerTextView.setVisibility(View.VISIBLE);
+
+            }
+
             for (int[] winningPosition : winningPositions) {
                 if (gameState[winningPosition[0]] == gameState[winningPosition[1]] && gameState[winningPosition[1]] == gameState[winningPosition[2]] && gameState[winningPosition[0]] != 2) {
                     gameActive = false; //Ends the game
@@ -49,9 +63,14 @@ public class MainActivity extends AppCompatActivity {
                     String winner = "";
                     if (activePlayer == 0) {
                         winner = "Red";
+/*                        p2Score ++;
+                        p2TextView.setText("Red: " + p2Score);*/
                     } else if (activePlayer == 1) {
                         winner = "Yellow";
+/*                        p1Score ++;
+                        p1TextView.setText("Yellow: " + p1Score);*/
                     }
+
                     Button playAgainButton = (Button) findViewById(R.id.playAgainButton);
                     TextView winnerTextView = (TextView) findViewById(R.id.winnerTextView);
                     winnerTextView.setText(winner + " has won!");
@@ -61,18 +80,8 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             }
-        } else if (gameTurns == 9){
-            // game ends on draw
-            Button playAgainButton = (Button) findViewById(R.id.playAgainButton);
-            TextView winnerTextView = (TextView) findViewById(R.id.winnerTextView);
-            winnerTextView.setText("It's a Draw!");
-
-            playAgainButton.setVisibility(View.VISIBLE);
-            winnerTextView.setVisibility(View.VISIBLE);
-
-        } else { // If player clicks on occupied space
-            Toast.makeText(this, "Click on an empty space", Toast.LENGTH_SHORT).show(); //Else If user clicks on occupied tile
-        }
+        } else { Toast.makeText(this, "Click on an empty space", Toast.LENGTH_SHORT).show(); //Else If user clicks on occupied tile
+            }
     }
 
     public void playAgain(View view) {
@@ -101,6 +110,11 @@ public class MainActivity extends AppCompatActivity {
         gameActive = true; //set game active to true.
         gameTurns = 0;
     }
+
+/*    public void updatePointsText(){
+        p1TextView.setText("Yellow: " + p1Score);
+        p2TextView.setText("Red: " + p2Score);
+    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
