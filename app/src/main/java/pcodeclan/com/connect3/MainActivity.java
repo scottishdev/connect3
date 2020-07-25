@@ -5,54 +5,70 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
 public class MainActivity extends AppCompatActivity {
-    int [] gameState = {2,2,2,2,2,2,2,2,2}; // 9 spaces for gamestate
-    int [][] winningPositions = {{0,1,2},{3,4,5},{6,7,8},{0,3,6},{1,4,7},{2,5,8},{0,4,8},{2,4,6}};
+    int[] gameState = {2, 2, 2, 2, 2, 2, 2, 2, 2}; // 9 spaces for gamestate
+    int[][] winningPositions = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}, {0, 3, 6}, {1, 4, 7}, {2, 5, 8}, {0, 4, 8}, {2, 4, 6}};
     int activePlayer = 0;// 0: yellow, 1: red, 2: empty
+    boolean gameActive = true;
 
     // Method for dropping counters in the square
-    public void dropIn(View view){
+    public void dropIn(View view) {
         ImageView counter = (ImageView) view;
-        Log.i("tag", (String)counter.getTag());
-
         int tappedCounter = Integer.parseInt(counter.getTag().toString());
 
-        if (gameState[tappedCounter] == 2){ //Checks if counter has been tapped. If no, then place counter and continue game
+        if (gameState[tappedCounter] == 2 && gameActive) { //Checks if counter has been tapped. If no, then place counter and continue game. Also, only runs if gameis active
+            gameState[tappedCounter] = activePlayer; //changes the value of the current element in gameState to the activePlayer
+            counter.setTranslationY(-1500);
 
-        gameState[tappedCounter] = activePlayer; //changes the value of the current element in gameState to the activePlayer
+            if (activePlayer == 0) {
+                counter.setImageResource(R.drawable.yellow);
+                activePlayer = 1;
+            } else {
+                counter.setImageResource(R.drawable.red);
+                activePlayer = 0;
+            }
 
-        counter.setTranslationY(-1500);
+            counter.animate().translationYBy(1500).rotation(800).setDuration(300);
 
-        if (activePlayer == 0){
-            counter.setImageResource(R.drawable.yellow);
-            activePlayer = 1;
-        } else {
-            counter.setImageResource(R.drawable.red);
-            activePlayer = 0;
-        }
+            for (int[] winningPosition : winningPositions) {
+                if (gameState[winningPosition[0]] == gameState[winningPosition[1]] && gameState[winningPosition[1]] == gameState[winningPosition[2]] && gameState[winningPosition[0]] != 2) {
+                    gameActive = false; //Ends the game
 
-        counter.animate().translationYBy(1500).rotation(800).setDuration(300);
+                    //If activeplayer 0 (yellow) wins then activeplayer is set to 1 (red)
+                    //So the messages are reversed. i.e. activeplayer 0 then red wins
+                    String winner = "";
+                    if (activePlayer == 0) {
+                        winner = "Red";
+                    } else if (activePlayer == 1) {
+                        winner = "Yellow";
+                    }
+                    Toast.makeText(this, winner + " has won", Toast.LENGTH_SHORT).show();
 
-        for (int [] winningPosition : winningPositions){
-            if (gameState[winningPosition[0]] == gameState[winningPosition[1]] && gameState[winningPosition[1]] == gameState[winningPosition[2]] && gameState[winningPosition[0]] != 2) {
-                //If activeplayer 0 (yellow) wins then activeplayer is set to 1 (red)
-                //So the messages are reversed. i.e. activeplayer 0 then red wins
-                String winner = "";
-                if (activePlayer == 0) {
-                    winner = "Red";
-                } else if (activePlayer == 1) {
-                    winner = "Yellow";
+                    Button playAgainButton = (Button) findViewById(R.id.playAgainButton);
+                    TextView winnerTextView = (TextView) findViewById(R.id.winnerTextView);
+                    winnerTextView.setText(winner + " has won!");
+
+                    playAgainButton.setVisibility(View.VISIBLE);
+                    winnerTextView.setVisibility(View.VISIBLE);
+
                 }
-                Toast.makeText(this, winner + " has won", Toast.LENGTH_SHORT).show();
-
-            }
             }
         } else {
-            Toast.makeText(this, "Click on an empty space", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Click on an empty space", Toast.LENGTH_SHORT).show(); //Else If user clicks on occupied tile
         }
+    }
+
+    public void playAgain(View view) {
+        //Make playagain button and winnertext invisible
+        //set game state to true.
+        //set counter image views to empty
     }
 
     @Override
