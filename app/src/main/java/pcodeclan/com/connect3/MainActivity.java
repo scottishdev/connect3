@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import androidx.gridlayout.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,8 +50,6 @@ public class MainActivity extends AppCompatActivity {
                     } else if (activePlayer == 1) {
                         winner = "Yellow";
                     }
-                    Toast.makeText(this, winner + " has won", Toast.LENGTH_SHORT).show();
-
                     Button playAgainButton = (Button) findViewById(R.id.playAgainButton);
                     TextView winnerTextView = (TextView) findViewById(R.id.winnerTextView);
                     winnerTextView.setText(winner + " has won!");
@@ -67,8 +66,28 @@ public class MainActivity extends AppCompatActivity {
 
     public void playAgain(View view) {
         //Make playagain button and winnertext invisible
-        //set game state to true.
+        Button playAgainButton = (Button) findViewById(R.id.playAgainButton);
+        TextView winnerTextView = (TextView) findViewById(R.id.winnerTextView);
+        playAgainButton.setVisibility(View.INVISIBLE);
+        winnerTextView.setVisibility(View.INVISIBLE);
+
         //set counter image views to empty
+        GridLayout gridLayout = (GridLayout) findViewById(R.id.gridLayout1);
+        for (int i=0; i < gridLayout.getChildCount(); i++){
+            ImageView counter = (ImageView) gridLayout.getChildAt(i);
+            counter.setImageDrawable(null);
+        }
+
+        //update array gameState
+/*        for (int element : gameState){
+            gameState[element] = 2;
+        }*/
+        for (int i=0; i<gameState.length;i++){
+            gameState[i] = 2;
+        }
+
+        activePlayer = 0;
+        gameActive = true; //set game active to true.
     }
 
     @Override
