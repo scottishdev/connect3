@@ -18,15 +18,17 @@ public class MainActivity extends AppCompatActivity {
     int[][] winningPositions = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}, {0, 3, 6}, {1, 4, 7}, {2, 5, 8}, {0, 4, 8}, {2, 4, 6}};
     int activePlayer = 0;// 0: yellow, 1: red, 2: empty
     boolean gameActive = true;
+    int gameTurns = 0;
 
     // Method for dropping counters in the square
     public void dropIn(View view) {
         ImageView counter = (ImageView) view;
         int tappedCounter = Integer.parseInt(counter.getTag().toString());
 
-        if (gameState[tappedCounter] == 2 && gameActive) { //Checks if counter has been tapped. If no, then place counter and continue game. Also, only runs if gameis active
+        if (gameState[tappedCounter] == 2 && gameActive && gameTurns != 9) { //Checks if counter has been tapped. If no, then place counter and continue game. Also, only runs if gameis active
             gameState[tappedCounter] = activePlayer; //changes the value of the current element in gameState to the activePlayer
             counter.setTranslationY(-1500);
+            gameTurns ++;
 
             if (activePlayer == 0) {
                 counter.setImageResource(R.drawable.yellow);
@@ -59,7 +61,16 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             }
-        } else {
+        } else if (gameTurns == 9){
+            // game ends on draw
+            Button playAgainButton = (Button) findViewById(R.id.playAgainButton);
+            TextView winnerTextView = (TextView) findViewById(R.id.winnerTextView);
+            winnerTextView.setText("It's a Draw!");
+
+            playAgainButton.setVisibility(View.VISIBLE);
+            winnerTextView.setVisibility(View.VISIBLE);
+
+        } else { // If player clicks on occupied space
             Toast.makeText(this, "Click on an empty space", Toast.LENGTH_SHORT).show(); //Else If user clicks on occupied tile
         }
     }
@@ -88,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
 
         activePlayer = 0;
         gameActive = true; //set game active to true.
+        gameTurns = 0;
     }
 
     @Override
